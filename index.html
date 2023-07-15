@@ -58,6 +58,8 @@
       </tbody>
     </table>
   </div>
+
+  <canvas width="200" height="200" id="preview-canvas"></canvas>
   
   <template id="exif-table-row">
     <tr class="even:bg-gray-50">
@@ -127,6 +129,29 @@
       console.log(fileItem.fileType);
 
       const tags = await ExifReader.load(fileItem.file);
+
+      // document.getElementById('preview').src = URL.createObjectURL(fileItem.file);
+
+      const tmpImage = document.createElement('img');
+      tmpImage.src = URL.createObjectURL(fileItem.file);
+      tmpImage.onload = function(){
+        console.log('width is ' + tmpImage.naturalWidth);
+
+        document.getElementById('preview-canvas').setAttribute('width', tmpImage.naturalWidth);
+        document.getElementById('preview-canvas').setAttribute('height', tmpImage.naturalHeight);
+        document.getElementById('preview-canvas').getContext("2d").drawImage(tmpImage, 0, 0);
+
+        /*
+        setTimeout(() => {
+          var download = document.getElementById('preview-canvas').toDataURL("image/png").replace("image/png", "image/octet-stream");
+
+          window.location.href= download;
+          console.log("Delayed for 1 second.");
+        }, 1000);
+        */
+      }
+      
+
       displayTags(tags);
     }),
     onremovefile: (err, fileItem) => {
