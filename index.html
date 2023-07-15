@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="tailwind.css" rel="stylesheet">
+  <title>Exifable - Exif Data Viewer</title>
+
+  <link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet">
+  <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+  <div class="text-center">
+    <h1 class="font-bold text-5xl mb-8">EXIFable</h1>
+    <p class="text-xl">View EXIF Data of your image easily</p>
+    <div class="bg-white max-w-sm mx-auto mt-4 p-4 text-center rounded-md drop-shadow">
+      <input type="file">
+    </div>
+  </div>
+
+  <div class="mx-auto my-8 max-w-lg px-auto text-center hidden" id="map-container">
+    <h3 class="font-semibold text-2xl mb-2">Location of Photo</h3>
+    <iframe
+      style="display:inline-block;"
+      width="450"
+      height="320"
+      frameborder="0" style="border:0"
+      referrerpolicy="no-referrer-when-downgrade"
+      src=""
+      allowfullscreen>
+    </iframe>
+  </div>
+  <div class="mx-auto mt-8 max-w-xl overflow-x-scroll shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+    <table class="min-w-full divide-y divide-gray-400 hidden" id="exif-table">
+      <thead class="bg-gray-50">
+        <tr>
+          <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Key</th>
+          <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Value</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200 bg-white" id="exif-table-body">
+        <tr class="even:bg-gray-100">
+          <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">Lindsay Walton</td>
+          <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">Front-end Developer</td>
+          </td>
+        </tr>
+        <tr class="even:bg-gray-50">
+          <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">Lindsay Walton</td>
+          <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">Front-end Developer</td>
+          </td>
+        </tr>
+        <tr class="even:bg-gray-50">
+          <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">Lindsay Walton</td>
+          <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">Front-end Developer</td>
+          </td>
+        </tr>
+        <!-- More people... -->
+      </tbody>
+    </table>
+  </div>
+  
+  <template id="exif-table-row">
+    <tr class="even:bg-gray-50">
+      <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"></td>
+      <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"></td>
+      </td>
+    </tr>
+  </template>
+</body>
+
+<script src="exif-reader.js"></script>
+<script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-resize/dist/filepond-plugin-image-resize.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-transform/dist/filepond-plugin-image-transform.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-crop/dist/filepond-plugin-image-crop.js"></script>
+<script src="https://unpkg.com/filepond/dist/filepond.js"></script>
+<script>
+  // AIzaSyCfQJAZStjNtforMiyJu5NhpvzYNEjRUZo
+  function displayTags(tags){
+    var sortedKeys = Object.keys(tags).sort();
+
+    console.debug(sortedKeys);
+    if(sortedKeys.includes('GPSLongitude') && sortedKeys.includes('GPSLatitude')){
+      var src = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCfQJAZStjNtforMiyJu5NhpvzYNEjRUZo&zoom=15&q=";
+
+      src += tags['GPSLatitude']['description'] + ', ' + tags['GPSLongitude']['description'];
+
+      document.querySelector('iframe').setAttribute('src', src);
+      document.getElementById('map-container').classList.remove('hidden');
+    }
+
+    var tableBody = document.getElementById('exif-table-body');
+    tableBody.innerHTML = '';
+    for(var i = 0; i < sortedKeys.length; ++i) {
+      const key = sortedKeys[i];
+      const value = tags[key];
+      var row = document.getElementById('exif-table-row').content.cloneNode(true);
+      var keyCol = row.querySelectorAll('td')[0];
+      var valueCol = row.querySelectorAll('td')[1];
+
+      keyCol.textContent = key;
+      valueCol.textContent = value['description'];
+      tableBody.appendChild(row);
+    }
+
+    document.getElementById('exif-table').classList.remove('hidden');
+  }
+
+  FilePond.registerPlugin(
+    FilePondPluginFileValidateType,
+    FilePondPluginImageCrop,
+    FilePondPluginImagePreview,
+    FilePondPluginImageResize,
+  );
+
+  const inputElement = document.querySelector('input[type="file"]');
+  const pond = FilePond.create(inputElement, {
+    imageCropAspectRatio: 1,
+    imageResizeTargetWidth: 256,
+    imageResizeMode: 'contain',
+    acceptedFileTypes: ['image/png', 'image/jpeg', 'image/pipeg', 'image/heic'],
+    allowFileEncode: true,
+    onaddfile: (async (err, fileItem) => {
+      console.log(err, fileItem.getMetadata('resize'));
+      console.log('addfile');
+      console.log(fileItem.fileType);
+
+      const tags = await ExifReader.load(fileItem.file);
+      displayTags(tags);
+    }),
+    onremovefile: (err, fileItem) => {
+      document.getElementById('exif-table-body').innerHTML = '';
+      document.getElementById('exif-table').classList.add('hidden');
+
+      document.querySelector('iframe').setAttribute('src', '');
+      document.getElementById('map-container').classList.add('hidden');
+    },
+    onpreparefile: (fileItem, outputFiles) => {
+      console.log('preparing');
+      outputFiles.forEach(output => {
+        console.log('output file');
+        const img = new Image();
+        img.src = URL.createObjectURL(output.file);
+        document.body.appendChild(img);
+      })
+    }
+  });
+</script>
+</html>
