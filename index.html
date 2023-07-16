@@ -30,6 +30,7 @@
   <div class="text-center">
     <h1 class="font-bold text-5xl mb-8">EXIF able</h1>
     <p class="text-xl">View EXIF metadata of your photos easily, check creation time and location of the photo.</p>
+    <p class="text-lg my-2 text-gray-500">Your photo is processed locally in your web browser, it will not send to any server</p>
     <p class="text-xl my-2 text-gray-700">You can also download a copy of photo with the EXIF data removed.</p>
     <div class="bg-white max-w-sm mx-auto mt-4 p-4 text-center rounded-md drop-shadow">
       <input type="file">
@@ -46,7 +47,7 @@
   </div>
 
 
-  <div class="mx-auto my-8 max-w-lg px-auto text-center hidden" id="map-container">
+  <div class="mx-auto my-8 max-w-lg px-auto text-center overflow-x-scroll hidden" id="map-container">
     <h3 class="font-semibold text-2xl mb-2">Location of Photo</h3>
     <iframe
       style="display:inline-block;"
