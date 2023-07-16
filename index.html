@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="tailwind.css" rel="stylesheet">
-  <title>Exifable - Exif Data Viewer</title>
+  <title>Exifable - EXIF Data Viewer</title>
 
   <link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet">
   <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet">
@@ -12,11 +12,21 @@
 <body class="bg-gray-100">
   <div class="text-center">
     <h1 class="font-bold text-5xl mb-8">EXIFable</h1>
-    <p class="text-xl">View EXIF Data of your image easily</p>
+    <p class="text-xl">View EXIF Data of your photos easily</p>
     <div class="bg-white max-w-sm mx-auto mt-4 p-4 text-center rounded-md drop-shadow">
       <input type="file">
     </div>
   </div>
+
+  <div class="mx-auto max-w-lg text-center my-8 hidden" id="download-container">
+    <a href="#" class="rounded-md bg-white px-4 py-3 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" target="_blank" download="file.png">
+      Download image with removed EXIF data
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 pb-0.5 inline">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9.75v6.75m0 0l-3-3m3 3l3-3m-8.25 6a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+      </svg>
+    </a>
+  </div>
+
 
   <div class="mx-auto my-8 max-w-lg px-auto text-center hidden" id="map-container">
     <h3 class="font-semibold text-2xl mb-2">Location of Photo</h3>
@@ -59,7 +69,7 @@
     </table>
   </div>
 
-  <canvas width="200" height="200" id="preview-canvas"></canvas>
+  <canvas width="200" height="200" id="preview-canvas" class="hidden"></canvas>
   
   <template id="exif-table-row">
     <tr class="even:bg-gray-50">
@@ -90,6 +100,7 @@
 
       document.querySelector('iframe').setAttribute('src', src);
       document.getElementById('map-container').classList.remove('hidden');
+      document.getElementById('download-container').classList.remove('hidden');
     }
 
     var tableBody = document.getElementById('exif-table-body');
@@ -124,13 +135,7 @@
     acceptedFileTypes: ['image/png', 'image/jpeg', 'image/pipeg', 'image/heic'],
     allowFileEncode: true,
     onaddfile: (async (err, fileItem) => {
-      console.log(err, fileItem.getMetadata('resize'));
-      console.log('addfile');
-      console.log(fileItem.fileType);
-
       const tags = await ExifReader.load(fileItem.file);
-
-      // document.getElementById('preview').src = URL.createObjectURL(fileItem.file);
 
       const tmpImage = document.createElement('img');
       tmpImage.src = URL.createObjectURL(fileItem.file);
@@ -141,14 +146,7 @@
         document.getElementById('preview-canvas').setAttribute('height', tmpImage.naturalHeight);
         document.getElementById('preview-canvas').getContext("2d").drawImage(tmpImage, 0, 0);
 
-        /*
-        setTimeout(() => {
-          var download = document.getElementById('preview-canvas').toDataURL("image/png").replace("image/png", "image/octet-stream");
-
-          window.location.href= download;
-          console.log("Delayed for 1 second.");
-        }, 1000);
-        */
+        setSrc(fileItem.filenameWithoutExtension);
       }
       
 
@@ -160,16 +158,22 @@
 
       document.querySelector('iframe').setAttribute('src', '');
       document.getElementById('map-container').classList.add('hidden');
-    },
-    onpreparefile: (fileItem, outputFiles) => {
-      console.log('preparing');
-      outputFiles.forEach(output => {
-        console.log('output file');
-        const img = new Image();
-        img.src = URL.createObjectURL(output.file);
-        document.body.appendChild(img);
-      })
+      document.getElementById('download-container').classList.add('hidden');
     }
   });
+</script>
+<script>
+  function setSrc(filename) {
+    var downloadImage = document.getElementById('preview-canvas').toDataURL("image/png").replace("image/png", "image/octet-stream");
+
+    document.querySelector('#download-container a').setAttribute('download', filename + '_exif_removed.png');
+    document.querySelector('#download-container a').setAttribute('href', downloadImage);
+  }
+
+  function download(){
+    var downloadImage = document.getElementById('preview-canvas').toDataURL("image/png").replace("image/png", "image/octet-stream");
+
+    window.location.href = downloadImage;
+  }
 </script>
 </html>
