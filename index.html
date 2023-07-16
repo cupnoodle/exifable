@@ -4,22 +4,40 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="tailwind.css" rel="stylesheet">
-  <title>Exifable - EXIF Data Viewer</title>
+  <title>EXIF able - Online Photo EXIF Data Viewer</title>
+  <meta name="description" content="View EXIF metadata of your photos easily, check creation time and location of the photo, remove EXIF data from your photo">
+  <meta name=”robots” content="index, follow">
+
+  <meta property="og:url" content="https://exifable.com" /><link href="https://exifable.com" rel="canonical" />
+    <meta name="twitter:card" content="summary"/>
+    <meta name="twitter:site" content="@exifable"/>
+    <meta name="twitter:creator" content="@exifable"/>
+    <meta property="og:site_name" content="exifable.com"/>
+    <meta property="og:locale" content="en_US"/>
+    <meta property="og:image" content="https://exifable.com/ogimage.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="EXIFable EXIF Data Viewer"><meta property="og:image:type" content="image/png"><meta property="og:type" content="website"><meta property="og:title" content="EXIF able - Online Photo EXIF Data Viewer"><meta property="og:description" content="View EXIF metadata of your photos easily, check creation time and location of the photo, remove EXIF data from your photo"><meta property="twitter:title" content="EXIF able - Online Photo EXIF Data Viewer"><meta property="twitter:description" content="View EXIF metadata of your photos easily, check creation time and location of the photo, remove EXIF data from your photo"><meta property="twitter:image" content="https://exifable.com/ogimage.png"><meta property="twitter:image:alt" content="EXIF able - Online Photo EXIF Data Viewer">
+
 
   <link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet">
   <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet">
+
+  <link rel="icon" 
+      type="image/png" 
+      href="https://exifable.com/favicon.png">
+
+  <script src="https://beamanalytics.b-cdn.net/beam.min.js" data-token="eec8fc50-a53c-4f2c-bfc2-aa424e00fb95" async></script>
 </head>
 <body class="bg-gray-100">
   <div class="text-center">
-    <h1 class="font-bold text-5xl mb-8">EXIFable</h1>
-    <p class="text-xl">View EXIF Data of your photos easily</p>
+    <h1 class="font-bold text-5xl mb-8">EXIF able</h1>
+    <p class="text-xl">View EXIF metadata of your photos easily, check creation time and location of the photo.</p>
+    <p class="text-xl my-2 text-gray-700">You can also download a copy of photo with the EXIF data removed.</p>
     <div class="bg-white max-w-sm mx-auto mt-4 p-4 text-center rounded-md drop-shadow">
       <input type="file">
     </div>
   </div>
 
   <div class="mx-auto max-w-lg text-center my-8 hidden" id="download-container">
-    <a href="#" class="rounded-md bg-white px-4 py-3 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" target="_blank" download="file.png">
+    <a href="#" class="rounded-md bg-white px-4 py-3 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 block" target="_blank" download="file.png">
       Download image with removed EXIF data
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 pb-0.5 inline">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9.75v6.75m0 0l-3-3m3 3l3-3m-8.25 6a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
@@ -40,6 +58,7 @@
       allowfullscreen>
     </iframe>
   </div>
+
   <div class="mx-auto mt-8 max-w-xl overflow-x-scroll shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
     <table class="min-w-full divide-y divide-gray-400 hidden" id="exif-table">
       <thead class="bg-gray-50">
@@ -71,6 +90,13 @@
 
   <canvas width="200" height="200" id="preview-canvas" class="hidden"></canvas>
   
+  <div class="mx-auto mt-4 max-w-xl text-center">
+    <a href="privacy.html" class="underline hover:text-gray-500">Privacy Policy</a>
+    <span>&nbsp;&nbsp;</span>
+    <a href="attribution.html" class="underline hover:text-gray-500">Attribution</a>
+    <br><br><br><br><br>
+    <p>Made by <a target="_blank" class="underline hover:text-gray-500" href="https://twitter.com/soulchildpls">Axel Kee 🐐</a></p>
+  </div>
   <template id="exif-table-row">
     <tr class="even:bg-gray-50">
       <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"></td>
@@ -88,11 +114,9 @@
 <script src="https://unpkg.com/filepond-plugin-image-crop/dist/filepond-plugin-image-crop.js"></script>
 <script src="https://unpkg.com/filepond/dist/filepond.js"></script>
 <script>
-  // AIzaSyCfQJAZStjNtforMiyJu5NhpvzYNEjRUZo
   function displayTags(tags){
     var sortedKeys = Object.keys(tags).sort();
 
-    console.debug(sortedKeys);
     if(sortedKeys.includes('GPSLongitude') && sortedKeys.includes('GPSLatitude')){
       var src = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCfQJAZStjNtforMiyJu5NhpvzYNEjRUZo&zoom=15&q=";
 
