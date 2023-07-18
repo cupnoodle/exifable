@@ -121,7 +121,7 @@
     if(sortedKeys.includes('GPSLongitude') && sortedKeys.includes('GPSLatitude')){
       var src = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCfQJAZStjNtforMiyJu5NhpvzYNEjRUZo&zoom=15&q=";
 
-      src += tags['GPSLatitude']['description'] + ', ' + tags['GPSLongitude']['description'];
+      src += tags['GPSLatitude']['description'] + ' ' + tags['GPSLatitudeRef']['description'].charAt(0) + ', ' + tags['GPSLongitude']['description'] + ' ' + tags['GPSLongitudeRef']['description'].charAt(0);
 
       document.querySelector('iframe').setAttribute('src', src);
       document.getElementById('map-container').classList.remove('hidden');
